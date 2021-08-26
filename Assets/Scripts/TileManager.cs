@@ -5,16 +5,23 @@ using UnityEngine;
 public class TileManager : MonoBehaviour
 {
     public ArrayLayout boardLayout;
+
+    [Header("UI Elements")]
     public Sprite[] pieces;
+    public RectTransform gameBoard;
+
+    [Header("Prefabs")]
+    public GameObject nodePiece;
+
     private int width = 9;
-    private int height = 14;
+    private int height = 14 ;
     Node[,] board;
 
     System.Random random;
 
     void Start()
     {
-
+        Set();
     }
 
     void Set()
@@ -23,6 +30,8 @@ public class TileManager : MonoBehaviour
         random = new System.Random(seed.GetHashCode());
 
         InitializeBoard();
+        VerifyBoard();
+        InstantiateBoard();
     }
 
     void InitializeBoard()
@@ -39,11 +48,40 @@ public class TileManager : MonoBehaviour
 
     void VerifyBoard()
     {
+        List<int> remove;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 Point p = new Point(x, y);
+                int val = GetValueAtPoint(p);
+                if (val <= 0) continue;
+
+                remove = new List<int>();
+                while(isConnected(p, true).Count > 0)
+                {
+                    val = GetValueAtPoint(p);
+                    if (!remove.Contains(val))
+                        remove.Add(val);
+                    setValueAtPoint(p, newvalue(ref remove));
+                }
+            }
+        }
+    }
+
+    void InstantiateBoard()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for(int y = 0; y < height; y++)
+            {
+                int val = board[x, y].value;
+                if (val <= 0) continue;
+                GameObject p = Instantiate(nodePiece, gameBoard);
+                NodePiece node = p.GetComponent<NodePiece>();
+                RectTransform rect = p.GetComponent<RectTransform>();
+                rect.anchoredPosition = new Vector2(32 + (64 * x), -32 - (64 * y));
+                node.Initialize(val, new Point(x, y), pieces[val - 1]);
             }
         }
     }
@@ -65,7 +103,7 @@ public class TileManager : MonoBehaviour
             List<Point> line = new List<Point>();
 
             int same = 0;
-            for (int i = 0; i < 3; i++)
+            for (int i = 1; i < 3; i++)
             {
                 Point check = Point.add(p, Point.mult(dir, i));
                 if (GetValueAtPoint(check) == val)
@@ -90,7 +128,7 @@ public class TileManager : MonoBehaviour
             {
                 if (GetValueAtPoint(next) == val)
                 {
-                    line.Add(p);
+                    line.Add(next);
                     same++;
                 }
             }
@@ -113,7 +151,7 @@ public class TileManager : MonoBehaviour
             {
                 if (GetValueAtPoint(pnt) == val)
                 {
-                    square.Add(p);
+                    square.Add(pnt);
                     same++;
                 }
             }
@@ -122,16 +160,34 @@ public class TileManager : MonoBehaviour
                 AddPoints(ref connected, square);
         }
 
-        if(main) //Checks for other 
+        if(main) //Checks for other matches along the current
         {
             for (int i = 0; i < connected.Count; i++)
                 AddPoints(ref connected, isConnected(connected[i], false));
         }
+
+        if (connected.Count > 0)
+            connected.Add(p);
+
+        return connected;
     }
 
     void AddPoints(ref List<Point> points, List<Point> add)
     {
+        foreach(Point p in add)
+        {
+            bool doadd = true;
+            for(int i = 0; i < points.Count; i++)
+            {
+                if(points[i].Equals(p))
+                {
+                    doadd = false;
+                    break;
+                }
+            }
 
+            if (doadd) points.Add(p);
+        }
     }
 
     int fillPiece()
@@ -143,7 +199,25 @@ public class TileManager : MonoBehaviour
 
     int GetValueAtPoint(Point P)
     {
+        if (P.x < 0 || P.x >= width || P.y < 0 || P.y >= height) return -1;
         return board[P.x, P.y].value;
+    }
+
+    void setValueAtPoint(Point p, int v)
+    {
+        board[p.x, p.y].value = v;
+    }
+
+    int newvalue(ref List<int> remove)
+    {
+        List<int> available = new List<int>();
+        for (int i = 0; i < pieces.Length; i++)
+            available.Add(i + 1);
+        foreach (int i in remove)
+            available.Remove(i);
+
+        if (available.Count <= 0) return 0;
+        return available[random.Next(0, available.Count)];
     }
 
     void Update()
