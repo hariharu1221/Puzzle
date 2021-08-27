@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class NodePiece : MonoBehaviour
+public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
 {
     public int value;
     public Point index;
@@ -13,6 +14,7 @@ public class NodePiece : MonoBehaviour
     [HideInInspector]
     public RectTransform rect;
 
+    bool updating;
     Image img;
 
     public void Initialize(int v, Point p, Sprite piece)
@@ -37,8 +39,35 @@ public class NodePiece : MonoBehaviour
         pos = new Vector2(32 + (64 * index.x), -32 - (64 * index.y));
     }
 
+    public void MovePosition(Vector2 move)
+    {
+        rect.anchoredPosition += move * Time.deltaTime * 16f;
+    }
+
+    public void MovePositionTo(Vector2 move)
+    {
+        rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, move, Time.deltaTime * 16f);
+    }
+
     void UpdateName()
     {
         transform.name = "Node [" + index.x + "," + index.y + "]";
+    }
+
+    public bool UpdatePiece()
+    {
+        return true;
+        // return false if it is not moving
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (updating) return;
+        Debug.Log("down" + transform.name);
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        Debug.Log("up" + transform.name);
     }
 }

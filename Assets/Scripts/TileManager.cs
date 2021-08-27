@@ -77,6 +77,11 @@ public class TileManager : MonoBehaviour
             {
                 int val = board[x, y].value;
                 if (val <= 0) continue;
+                if (val > pieces.Length)
+                {
+                    board[x, y].value = random.Next(1, pieces.Length);
+                    val = board[x, y].value;
+                }
                 GameObject p = Instantiate(nodePiece, gameBoard);
                 NodePiece node = p.GetComponent<NodePiece>();
                 RectTransform rect = p.GetComponent<RectTransform>();
@@ -232,6 +237,11 @@ public class TileManager : MonoBehaviour
         for (int i = 0; i < 20; i++)
             seed += aChars[Random.Range(0, aChars.Length)];
         return seed;
+    }
+
+    public Vector2 getPositionFromPoint(Point p)
+    {
+        return new Vector2(32 + (64 * p.x), -32 - (64 * p.y));
     }
 }
 
