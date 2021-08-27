@@ -63,11 +63,13 @@ public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         if (updating) return;
+        MovePieces.instance.MovePiece(this);
         Debug.Log("down" + transform.name);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        MovePieces.instance.DropPiece();
         Debug.Log("up" + transform.name);
     }
 }

@@ -57,7 +57,11 @@ public class MovePieces : MonoBehaviour
     public void DropPiece()
     {
         if (moving == null) return;
-
+        Debug.Log("Dropped");
+        //if newIndex != moving.index
         //Filp the pieces around in the game board
+        //else
+        //Reset the piece back to original spot
+        moving = null;
     }
 }
