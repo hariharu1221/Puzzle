@@ -11,6 +11,11 @@ public class MovePieces : MonoBehaviour
     Point newIndex;
     Vector2 mouseStart;
 
+    public Point flipPieceValue;
+    public Point svmove;
+    public bool match = false;
+    //public Point FlipPieceValue { get { return flipPieceValue; } set { value = flipPieceValue; } }
+
     private void Awake()
     {
         instance = this;
@@ -36,7 +41,7 @@ public class MovePieces : MonoBehaviour
                 if (aDir.x > aDir.y)
                     add = (new Point((nDir.x > 0) ? 1 : -1, 0));
                 else if (aDir.y > aDir.x)
-                    add = (new Point(0, (nDir.y > 0) ? 1 : -1));
+                    add = (new Point(0, (nDir.y > 0) ? -1 : 1));
             }
             newIndex.add(add);
 
@@ -49,19 +54,41 @@ public class MovePieces : MonoBehaviour
 
     public void MovePiece(NodePiece piece)
     {
-        if (moving != null) return;
+        if (moving != null || match) return;
         moving = piece;
         mouseStart = Input.mousePosition;
     }
 
     public void DropPiece()
     {
-        if (moving == null) return;
+        if (moving == null || match) return;
         Debug.Log("Dropped");
-        //if newIndex != moving.index
-        //Filp the pieces around in the game board
-        //else
-        //Reset the piece back to original spot
+        if (!newIndex.Equals(moving.index))
+        {
+            SetFlipPieceValue(moving.index, newIndex);
+            game.flipPieces(moving.index, newIndex, true);
+        }
+        else
+            game.ResetPiece(moving);
+        svmove = moving.index;
+
         moving = null;
+        match = true;
+        game.Turn = false;
+        game.Chain = 0;
+    }
+
+    public void SetFlipPieceValue(Point mv, Point iv)
+    {
+        if(game.GetValueAtPoint(mv) < game.GetValueAtPoint(iv))
+        {
+            flipPieceValue.x = game.GetValueAtPoint(iv);
+            flipPieceValue.y = game.GetValueAtPoint(mv);
+        }
+        else
+        {
+            flipPieceValue.x = game.GetValueAtPoint(mv);
+            flipPieceValue.y = game.GetValueAtPoint(iv);
+        }
     }
 }
