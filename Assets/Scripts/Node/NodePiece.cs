@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
 {
     public int value;
+    public int state;
     public Point index;
 
     [HideInInspector]
@@ -17,11 +18,12 @@ public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
     bool updating;
     Image img;
 
-    public void Initialize(int v, Point p, Sprite piece)
+    public void Initialize(int v, Point p, Sprite piece, int s)
     {
         img = GetComponent<Image>();
         rect = GetComponent<RectTransform>();
 
+        state = s;
         value = v;
         SetIndex(p);
         img.sprite = piece;

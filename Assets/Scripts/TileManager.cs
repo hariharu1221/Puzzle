@@ -61,7 +61,7 @@ public class TileManager : MonoBehaviour
         game_Effect();
     }
 
-    void game_Flip()
+    void game_Flip()    //플립 업데이트
     {
         List<NodePiece> finishedUpdating = new List<NodePiece>();
         for (int i = 0; i < update.Count; i++)
@@ -81,26 +81,26 @@ public class TileManager : MonoBehaviour
             List<Point> connected = isConnected(piece.index, true);
             bool wasFlipped = (flip != null);
 
-            if (wasFlipped) //If we flipped to make this update
+            if (wasFlipped) //만약 플립했을 때 업데이트
             {
                 flippedPiece = flip.getOtherPiece(piece);
                 AddPoints(ref connected, isConnected(flippedPiece.index, true));
             }
-            if (connected.Count == 0)  //If we didn't make a match
+            if (connected.Count == 0)  //매칭이 되지 않은 경우
             {
-                if (wasFlipped && flippedPiece != null) //If we flipped
+                if (wasFlipped && flippedPiece != null) //만약 플립한 경우
                     flipPieces(piece.index, flippedPiece.index, false); //Flip back
                 mp.match = false;
             }
-            else //If we made a match
+            else //매칭이 된 경우
             {
                 Turn = true;
                 if (Turn) Chain++;
-                foreach (Point pnt in connected) //Remove the node.pieces connected
+                foreach (Point pnt in connected) //연결된 원소 제거
                 {
                     addDeadPiece(pnt);
                 }
-                if (i == finishedUpdating.Count - 1 && mp.match)
+                if (i == finishedUpdating.Count - 1 && mp.match) //원소 반응 실행
                 {
 
                     plusSe = 0.5f;
@@ -109,10 +109,10 @@ public class TileManager : MonoBehaviour
                 }
             }
 
-            flipped.Remove(flip);  //Remove the flip after update
+            flipped.Remove(flip);  //업데이트 후 플립 제거
             update.Remove(piece);
             if (i == finishedUpdating.Count - 1)
-                Invoke("ApplyGravityToBoard", (0.2f + plusSe));
+                Invoke("ApplyGravityToBoard", (0.2f + plusSe)); //원소 내려옴
         }
     }
 
@@ -124,10 +124,10 @@ public class TileManager : MonoBehaviour
 
     void Element()
     {
-        er.elementalReaction();
+        er.elementalReaction(); //원소 반응
     }
 
-    void ApplyGravityToBoard()
+    void ApplyGravityToBoard() //중력 작용
     {
         for(int x = 0; x < width; x++)
         {
@@ -179,7 +179,7 @@ public class TileManager : MonoBehaviour
                             piece = n;
 
                         }
-                        piece.Initialize(newVal, p, pieces[newVal - 1]);
+                        piece.Initialize(newVal, p, pieces[newVal - 1], 1);
 
                         Node hole = getNodeAtPoint(p);
                         hole.SetPiece(piece);
@@ -232,7 +232,7 @@ public class TileManager : MonoBehaviour
         {
             for (int x = 0; x < width; x++)
             {
-                board[x, y] = new Node((boardLayout.rows[y].row[x]) ? -1 : fillPiece(), new Point(x, y));
+                board[x, y] = new Node((boardLayout.rows[y].row[x]) ? -1 : fillPiece(), new Point(x, y), 1);
             }
         }
     }
@@ -269,12 +269,13 @@ public class TileManager : MonoBehaviour
                 Node node = getNodeAtPoint(new Point(x, y));
 
                 int val = node.value;
+                int sta = node.state;
                 if (val <= 0) continue;
                 GameObject p = Instantiate(nodePiece, gameBoard);
                 NodePiece piece = p.GetComponent<NodePiece>();
                 RectTransform rect = p.GetComponent<RectTransform>();
                 rect.anchoredPosition = new Vector2(32 + (64 * x), -32 - (64 * y));
-                piece.Initialize(val, new Point(x, y), pieces[val - 1]);
+                piece.Initialize(val, new Point(x, y), pieces[val - 1], sta);
                 node.SetPiece(piece);
             }
         }
@@ -423,13 +424,25 @@ public class TileManager : MonoBehaviour
         return val;
     }
 
+    public int GetStateAtPoint(Point P)
+    {
+        if (P.x < 0 || P.x >= width || P.y < 0 || P.y >= height) return -1;
+        return board[P.x, P.y].state;
+    }
+
+    public void setStateAtPoint(Point P, int s) ////set p위치의 state = 원소 상태
+    {
+        if (P.x < 0 || P.x >= width || P.y < 0 || P.y >= height) return;
+        board[P.x, P.y].state = s;
+    }
+
     public int GetValueAtPoint(Point P)
     {
         if (P.x < 0 || P.x >= width || P.y < 0 || P.y >= height) return -1;
         return board[P.x, P.y].value;
     }
 
-    void setValueAtPoint(Point p, int v)
+    void setValueAtPoint(Point p, int v)    //set p위치의 value = 원소 종류
     {
         board[p.x, p.y].value = v;
     }
@@ -451,7 +464,7 @@ public class TileManager : MonoBehaviour
         return available[random.Next(0, available.Count)];
     }
 
-    string getRandomSeed()
+    string getRandomSeed()  //랜덤 시드
     {
         string seed = "";
         string aChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()";
@@ -465,7 +478,7 @@ public class TileManager : MonoBehaviour
         return new Vector2(32 + (64 * p.x), -32 - (64 * p.y));
     }
 
-    public void addDeadPiece(Point p, int score = 100)
+    public void addDeadPiece(Point p, int score = 100) //p위치의 블럭을 지우고 점수를 얻음
     {
         if (GetValueAtPoint(p) < 0) return;
         Node node = getNodeAtPoint(p);
@@ -485,13 +498,15 @@ public class TileManager : MonoBehaviour
 public class Node
 {
     public int value;
+    public int state;
     public Point index;
     NodePiece piece;
 
-    public Node(int v, Point i)
+    public Node(int v, Point i, int s)
     {
         value = v;
         index = i;
+        state = s;
     }
 
     public void SetPiece(NodePiece p)

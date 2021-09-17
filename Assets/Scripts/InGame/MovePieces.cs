@@ -12,7 +12,8 @@ public class MovePieces : MonoBehaviour
     Vector2 mouseStart;
 
     public Point flipPieceValue;
-    public Point svmove;
+    public Point startP;
+    public Point endP;
     public bool match = false;
     //public Point FlipPieceValue { get { return flipPieceValue; } set { value = flipPieceValue; } }
 
@@ -57,6 +58,7 @@ public class MovePieces : MonoBehaviour
         if (moving != null || match) return;
         moving = piece;
         mouseStart = Input.mousePosition;
+        startP = moving.index;
     }
 
     public void DropPiece()
@@ -70,7 +72,7 @@ public class MovePieces : MonoBehaviour
         }
         else
             game.ResetPiece(moving);
-        svmove = moving.index;
+        endP = moving.index;
 
         moving = null;
         match = true;
