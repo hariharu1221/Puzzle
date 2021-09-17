@@ -42,7 +42,7 @@ public class ElementalReaction : MonoBehaviour
                 if(game.GetValueAtPoint(new Point(mp.endP.x + x, mp.endP.y + y)) == 1)  game.addDeadPiece(new Point(mp.endP.x + x, mp.endP.y + y));
     }
 
-    void WaterIce()
+    void WaterIce()     //바꾼 방향을 기준으로 앞 3개- 한줄 블럭의 state값을 2로 바꿈---
     {
         Point endP = mp.endP;
         Point startP = mp.startP;
