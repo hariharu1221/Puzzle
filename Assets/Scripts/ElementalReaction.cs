@@ -23,7 +23,7 @@ public class ElementalReaction : MonoBehaviour
         if (el.x == 5 && el.y == 1)   WaterIce();
     }
 
-    void WaterFire()
+    void WaterFire()   //바꾼 블럭을 기준으로 3x3블럭이 터짐
     {
         for (int x = -1; x <= 1; x++)
             for (int y = -1; y <= 1; y++)
@@ -35,7 +35,7 @@ public class ElementalReaction : MonoBehaviour
         
     }
 
-    void WaterLight()
+    void WaterLight()    //바꾼 블럭을 기준으로 7x7내의 물 원소를 지움
     {
         for (int x = -3; x <= 3; x++)
             for (int y = -3; y <= 3; y++)
