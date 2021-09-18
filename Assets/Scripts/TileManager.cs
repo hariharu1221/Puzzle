@@ -19,8 +19,8 @@ public class TileManager : MonoBehaviour
     [Header("Text")]
     public Text scoreText;
 
-    private int width = 9;
-    private int height = 14 ;
+    public int width = 9;
+    public int height = 14 ;
     int[] fills;
     Node[,] board;
 
@@ -64,12 +64,12 @@ public class TileManager : MonoBehaviour
     void game_Flip()    //플립 업데이트
     {
         List<NodePiece> finishedUpdating = new List<NodePiece>();
-        for (int i = 0; i < update.Count; i++)
+        for (int i = 0; i < update.Count; i++)  //업데이트 카운트가 생기면
         {
             NodePiece piece = update[i];
-            if (!piece.UpdatePiece()) finishedUpdating.Add(piece);
+            if (!piece.UpdatePiece()) finishedUpdating.Add(piece);  //완료 업데이트로 넘김
         }
-        for (int i = 0; i < finishedUpdating.Count; i++)
+        for (int i = 0; i < finishedUpdating.Count; i++)   //완료 업데이트 카운트 만큼
         {
             NodePiece piece = finishedUpdating[i];
             FlippedPieces flip = getFlipped(piece);
@@ -83,8 +83,8 @@ public class TileManager : MonoBehaviour
 
             if (wasFlipped) //만약 플립했을 때 업데이트
             {
-                flippedPiece = flip.getOtherPiece(piece);
-                AddPoints(ref connected, isConnected(flippedPiece.index, true));
+                flippedPiece = flip.getOtherPiece(piece);   //저장 했던 피스값과 교환
+                AddPoints(ref connected, isConnected(flippedPiece.index, true));    //매칭되었는지 확인
             }
             if (connected.Count == 0)  //매칭이 되지 않은 경우
             {
@@ -179,7 +179,7 @@ public class TileManager : MonoBehaviour
                             piece = n;
 
                         }
-                        piece.Initialize(newVal, p, pieces[newVal - 1], 1);
+                        piece.Initialize(newVal, p, pieces[newVal - 1], 1, gameBoard);
 
                         Node hole = getNodeAtPoint(p);
                         hole.SetPiece(piece);
@@ -275,7 +275,8 @@ public class TileManager : MonoBehaviour
                 NodePiece piece = p.GetComponent<NodePiece>();
                 RectTransform rect = p.GetComponent<RectTransform>();
                 rect.anchoredPosition = new Vector2(32 + (64 * x), -32 - (64 * y));
-                piece.Initialize(val, new Point(x, y), pieces[val - 1], sta);
+                piece.Initialize(val, new Point(x, y), pieces[val - 1], sta, gameBoard);
+
                 node.SetPiece(piece);
             }
         }
@@ -434,6 +435,10 @@ public class TileManager : MonoBehaviour
     {
         if (P.x < 0 || P.x >= width || P.y < 0 || P.y >= height) return;
         board[P.x, P.y].state = s;
+        Node node = getNodeAtPoint(P);
+        NodePiece nodePiece = node.getPiece();
+        nodePiece.state = s;
+        nodePiece.SetState();
     }
 
     public int GetValueAtPoint(Point P)
@@ -512,6 +517,7 @@ public class Node
     public void SetPiece(NodePiece p)
     {
         piece = p;
+        state = (piece == null) ? 0 : piece.state;
         value = (piece == null) ? 0 : piece.value;
         if (piece == null) return;
         piece.SetIndex(index);
