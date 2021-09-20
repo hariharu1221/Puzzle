@@ -36,7 +36,8 @@ public class TileManager : MonoBehaviour
     float plusSe = 0;
     int score = 0;
     private int chain = 0;
-    private bool turn = false;
+    private bool isturn = false;
+    private int turn = 0;
 
     public int Chain
     {
@@ -44,7 +45,13 @@ public class TileManager : MonoBehaviour
         set { chain = value; }
     }
 
-    public bool Turn
+    public bool isTurn
+    {
+        get { return isturn; }
+        set { isturn = value; }
+    }
+
+    public int Turn
     {
         get { return turn; }
         set { turn = value; }
@@ -91,11 +98,12 @@ public class TileManager : MonoBehaviour
                 if (wasFlipped && flippedPiece != null) //만약 플립한 경우
                     flipPieces(piece.index, flippedPiece.index, false); //Flip back
                 mp.match = false;
+                Turn++;
             }
             else //매칭이 된 경우
             {
-                Turn = true;
-                if (Turn) Chain++;
+                isTurn = true;
+                if (isTurn) Chain++;
                 foreach (Point pnt in connected) //연결된 원소 제거
                 {
                     addDeadPiece(pnt);
@@ -143,7 +151,7 @@ public class TileManager : MonoBehaviour
                     int nextval = GetValueAtPoint(next);
                     if (nextval == 0)
                         continue;
-                    if(nextval != -1)  //If we did not hit an end, but its not 0 then use this to fill the current hole
+                    if (nextval != -1)  //If we did not hit an end, but its not 0 then use this to fill the current hole
                     {
                         Node got = getNodeAtPoint(next);
                         NodePiece piece = got.getPiece();
@@ -161,7 +169,7 @@ public class TileManager : MonoBehaviour
                         int newVal = fillPiece();
                         NodePiece piece;
                         Point fallPnt = new Point(x, (-1 - fills[x]));
-                        if(dead.Count > 0)
+                        if (dead.Count > 0)
                         {
                             NodePiece revived = dead[0];
                             revived.gameObject.SetActive(true);
@@ -488,12 +496,19 @@ public class TileManager : MonoBehaviour
         if (GetValueAtPoint(p) < 0) return;
         Node node = getNodeAtPoint(p);
         NodePiece nodePiece = node.getPiece();
+
         if (nodePiece != null)
         {
             nodePiece.gameObject.SetActive(false);
             dead.Add(nodePiece);
         }
         node.SetPiece(null);
+
+        //if (GetStateAtPoint(p) == 2)
+        //{
+        //    setStateAtPoint(p, 1);
+        //    nodePiece.SetState();
+        //}
 
         this.score += score * ((Chain + 5) / 5);
     }

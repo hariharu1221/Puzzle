@@ -76,7 +76,7 @@ public class MovePieces : MonoBehaviour
 
         moving = null;
         match = true;
-        game.Turn = false;
+        game.isTurn = false;
         game.Chain = 0;
     }
 
