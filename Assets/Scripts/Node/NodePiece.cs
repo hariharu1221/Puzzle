@@ -6,14 +6,10 @@ using UnityEngine.EventSystems;
 
 public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
 {
-    [Header("±âº» °ª")]
+    [Header("ï¿½âº» ï¿½ï¿½")]
     public int value;
     public int state;
     public Point index;
-    public GameObject statePiece;
-
-    [Header("»óÅÂ ÀÌ¹ÌÁö")]
-    public Sprite[] statesSprite;
 
     [HideInInspector]
     public Vector2 pos;
@@ -26,38 +22,38 @@ public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
     Image img;
     Image onimg;
 
-    GameObject n;
-    RectTransform gameboard;
+    GameObject statevalue;
 
-    public void Initialize(int v, Point p, Sprite piece, int s, RectTransform gameBoard)
+    public void Initialize(int v, Point p, Sprite piece, int s, GameObject stateval)
     {
         img = GetComponent<Image>();
         rect = GetComponent<RectTransform>();
 
         state = s;
         value = v;
+        statevalue = stateval;
+
         SetIndex(p);
+
         img.sprite = piece;
 
-        gameboard = gameBoard;
-        SetState();
     }
 
-    public void SetState()
+    public void SetState(int s)
     {
-        n = Instantiate(statePiece, gameboard);
-        statePiece.GetComponent<Image>().sprite = statesSprite[state - 1];
-        statePiece.GetComponent<RectTransform>().anchoredPosition = new Vector2(32 + (64 * index.x), -32 - (64 * index.y));
+        state = s;
+        statevalue.GetComponent<StateValue>().SetIndex(index, state);
+    }
 
-        if (state == 1)
-        {
-            Destroy(n);
-        }
+    public GameObject getStateValue()
+    {
+        return statevalue;
     }
 
     public void SetIndex(Point p)
     {
         index = p;
+        SetState(state);
         ResetPosition();
         UpdateName();
     }

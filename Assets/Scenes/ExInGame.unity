@@ -261,12 +261,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 9b3fb60d774e4554e9490e87d178b17e, type: 3}
   gameBoard: {fileID: 1997939119}
   nodePiece: {fileID: 51280143247985516, guid: fd38237cc8a7c3945a34ddb5b32dbe0e, type: 3}
+  statePiece: {fileID: 958844147721361252, guid: 4c842949881aa4642934f4685875b582, type: 3}
   scoreText: {fileID: 331289746}
-  statesSprite:
-  - {fileID: 21300000, guid: 6bc9210e89b948449bd4bc6ccf9287b2, type: 3}
-  - {fileID: 21300000, guid: d4240d477affba34fbd5087f9295fe4a, type: 3}
-  - {fileID: 21300000, guid: 05e982701a951e74d854ede63d945ce3, type: 3}
-  - {fileID: 21300000, guid: be19bb149a35d7d48b5e4cc8c1cb1fad, type: 3}
   width: 9
   height: 14
   dead: []

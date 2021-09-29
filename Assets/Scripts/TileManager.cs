@@ -15,6 +15,7 @@ public class TileManager : MonoBehaviour
 
     [Header("Prefabs")]
     public GameObject nodePiece;
+    public GameObject statePiece;
 
     [Header("Text")]
     public Text scoreText;
@@ -187,7 +188,7 @@ public class TileManager : MonoBehaviour
                             piece = n;
 
                         }
-                        piece.Initialize(newVal, p, pieces[newVal - 1], 1, gameBoard);
+                        piece.Initialize(newVal, p, pieces[newVal - 1], 1, piece.getStateValue());
 
                         Node hole = getNodeAtPoint(p);
                         hole.SetPiece(piece);
@@ -281,9 +282,18 @@ public class TileManager : MonoBehaviour
                 if (val <= 0) continue;
                 GameObject p = Instantiate(nodePiece, gameBoard);
                 NodePiece piece = p.GetComponent<NodePiece>();
-                RectTransform rect = p.GetComponent<RectTransform>();
-                rect.anchoredPosition = new Vector2(32 + (64 * x), -32 - (64 * y));
-                piece.Initialize(val, new Point(x, y), pieces[val - 1], sta, gameBoard);
+                RectTransform rectPiece = p.GetComponent<RectTransform>();
+                rectPiece.anchoredPosition = new Vector2(32 + (64 * x), -32 - (64 * y));
+
+                GameObject s = Instantiate(statePiece, gameBoard);
+                StateValue spiece = s.GetComponent<StateValue>();
+                RectTransform srectPiece = s.GetComponent<RectTransform>();
+                srectPiece.anchoredPosition = new Vector2(32 + (64 * x), -32 - (64 * y));
+                s.transform.parent = p.transform;
+                s.transform.SetParent(p.transform);
+
+                spiece.Initialize(sta, new Point(x, y));
+                piece.Initialize(val, new Point(x, y), pieces[val - 1], sta, s);
 
                 node.SetPiece(piece);
             }
@@ -445,8 +455,7 @@ public class TileManager : MonoBehaviour
         board[P.x, P.y].state = s;
         Node node = getNodeAtPoint(P);
         NodePiece nodePiece = node.getPiece();
-        nodePiece.state = s;
-        nodePiece.SetState();
+        nodePiece.SetState(s);
     }
 
     public int GetValueAtPoint(Point P)
@@ -497,18 +506,19 @@ public class TileManager : MonoBehaviour
         Node node = getNodeAtPoint(p);
         NodePiece nodePiece = node.getPiece();
 
-        if (nodePiece != null)
+        if (GetStateAtPoint(p) == 1)
         {
-            nodePiece.gameObject.SetActive(false);
-            dead.Add(nodePiece);
+            if (nodePiece != null)
+            {
+                nodePiece.gameObject.SetActive(false);
+                dead.Add(nodePiece);
+            }
+            node.SetPiece(null);
         }
-        node.SetPiece(null);
-
-        //if (GetStateAtPoint(p) == 2)
-        //{
-        //    setStateAtPoint(p, 1);
-        //    nodePiece.SetState();
-        //}
+        else if (GetStateAtPoint(p) == 2)
+        {
+            setStateAtPoint(p, 1);
+        }
 
         this.score += score * ((Chain + 5) / 5);
     }
@@ -521,6 +531,7 @@ public class Node
     public int state;
     public Point index;
     NodePiece piece;
+    StateValue statevalue;
 
     public Node(int v, Point i, int s)
     {
@@ -532,10 +543,12 @@ public class Node
     public void SetPiece(NodePiece p)
     {
         piece = p;
+        //statevalue = s;
         state = (piece == null) ? 0 : piece.state;
         value = (piece == null) ? 0 : piece.value;
         if (piece == null) return;
         piece.SetIndex(index);
+        //statevalue.SetIndex(index);
     }
 
     public NodePiece getPiece()
