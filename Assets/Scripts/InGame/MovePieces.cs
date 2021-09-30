@@ -64,8 +64,7 @@ public class MovePieces : MonoBehaviour
     public void DropPiece()
     {
         if (moving == null || match) return;
-        Debug.Log("Dropped");
-        if (!newIndex.Equals(moving.index))
+        if (!newIndex.Equals(moving.index) && game.GetStateAtPoint(newIndex) == 1)
         {
             SetFlipPieceValue(moving.index, newIndex);
             game.flipPieces(moving.index, newIndex, true);
@@ -73,6 +72,7 @@ public class MovePieces : MonoBehaviour
         else
             game.ResetPiece(moving);
         endP = moving.index;
+
 
         moving = null;
         match = true;

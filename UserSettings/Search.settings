@@ -17,6 +17,11 @@ scopes = {
 	"m_SideBarSplitter.785D90A9" = "180"
 	"m_DetailsPanelSplitter.785D90A9" = "700"
 	"currentGroup.785D90A9" = "all"
+	"last_search.5A5D90A9" = "fx_sta_bingdong_01"
+	"m_ShownPanels.5A5D90A9" = "3"
+	"m_SideBarSplitter.5A5D90A9" = "180"
+	"m_DetailsPanelSplitter.5A5D90A9" = "700"
+	"currentGroup.5A5D90A9" = "scene"
 }
 providers = {
 	asset = {

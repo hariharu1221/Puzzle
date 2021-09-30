@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
 {
-    [Header("�⺻ ��")]
+    [Header("값 설정")]
     public int value;
     public int state;
     public Point index;
@@ -36,13 +36,18 @@ public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
         SetIndex(p);
 
         img.sprite = piece;
-
     }
 
     public void SetState(int s)
     {
         state = s;
         statevalue.GetComponent<StateValue>().SetIndex(index, state);
+    }
+    
+    public void SetValue(int v, Sprite piece)
+    {
+        value = v;
+        img.sprite = piece;
     }
 
     public GameObject getStateValue()
@@ -100,13 +105,11 @@ public class NodePiece : MonoBehaviour , IPointerDownHandler , IPointerUpHandler
     {
         if (updating) return;
         if (state == 1) MovePieces.instance.MovePiece(this);
-        //Debug.Log("down" + transform.name);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         if (state == 1) MovePieces.instance.DropPiece();
-        //Debug.Log("up" + transform.name);
     }
 
     public Texture2D MergeTextures(Texture2D img, Texture2D overlay)

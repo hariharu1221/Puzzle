@@ -63,7 +63,7 @@ public class TileManager : MonoBehaviour
         Set();
     }
 
-    void  Update()
+    void Update()
     {
         game_Flip();
         game_Effect();
@@ -111,7 +111,6 @@ public class TileManager : MonoBehaviour
                 }
                 if (i == finishedUpdating.Count - 1 && mp.match) //원소 반응 실행
                 {
-
                     plusSe = 0.5f;
                     if (mp.match) Invoke("Element", 0.5f);
                     mp.match = false;
@@ -435,7 +434,7 @@ public class TileManager : MonoBehaviour
         }
     }
 
-    int fillPiece()
+    int fillPiece() //value 랜덤 설정
     {
         int val = 1;
         //val = (random.Next(0, 100) / (100 / pieces.Length)) + 1;
@@ -452,6 +451,7 @@ public class TileManager : MonoBehaviour
     public void setStateAtPoint(Point P, int s) ////set p위치의 state = 원소 상태
     {
         if (P.x < 0 || P.x >= width || P.y < 0 || P.y >= height) return;
+        if (board[P.x, P.y].value < 1) return;
         board[P.x, P.y].state = s;
         Node node = getNodeAtPoint(P);
         NodePiece nodePiece = node.getPiece();
@@ -467,6 +467,16 @@ public class TileManager : MonoBehaviour
     void setValueAtPoint(Point p, int v)    //set p위치의 value = 원소 종류
     {
         board[p.x, p.y].value = v;
+    }
+
+    public void SetValue(Point p, int v)
+    {
+        if (p.x < 0 || p.x >= width || p.y < 0 || p.y >= height) return;
+        if (board[p.x, p.y].value < 1) return;
+        board[p.x, p.y].value = v;
+        Node node = getNodeAtPoint(p);
+        NodePiece piece = node.getPiece();
+        piece.SetValue(v, pieces[v - 1]);
     }
 
     public Node getNodeAtPoint(Point p)
@@ -486,7 +496,7 @@ public class TileManager : MonoBehaviour
         return available[random.Next(0, available.Count)];
     }
 
-    string getRandomSeed()  //랜덤 시드
+    public string getRandomSeed()  //랜덤 시드
     {
         string seed = "";
         string aChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()";
@@ -531,7 +541,6 @@ public class Node
     public int state;
     public Point index;
     NodePiece piece;
-    StateValue statevalue;
 
     public Node(int v, Point i, int s)
     {
@@ -543,12 +552,10 @@ public class Node
     public void SetPiece(NodePiece p)
     {
         piece = p;
-        //statevalue = s;
         state = (piece == null) ? 0 : piece.state;
         value = (piece == null) ? 0 : piece.value;
         if (piece == null) return;
         piece.SetIndex(index);
-        //statevalue.SetIndex(index);
     }
 
     public NodePiece getPiece()
