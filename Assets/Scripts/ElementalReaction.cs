@@ -72,13 +72,13 @@ public class ElementalReaction : MonoBehaviour
             Point index = new Point(random.Next(mp.endP.x - 3, mp.endP.x + 3), random.Next(mp.endP.y - 3, mp.endP.y + 3));
 
             for (int j = 0; j < i; j++)
-                if (check[j] == index)
+                if (check[j] == index || game.GetValueAtPoint(index) == 1 || game.GetValueAtPoint(index) == -1)
                 {
                     i--;
                     continue;
                 }
 
-            check.Add(index);
+            check[i] = index;
             game.SetValue(index, 1);
         }
     }
