@@ -15,16 +15,13 @@ public class TileManager : MonoBehaviour
 
     [Header("Prefabs")]
     public GameObject nodePiece;
-
-
-
     public GameObject statePiece;
 
     [Header("Text")]
     public Text scoreText;
 
     public int width = 9;
-    public int height = 14 ;
+    public int height = 14;
     int[] fills;
     Node[,] board;
 
@@ -129,7 +126,7 @@ public class TileManager : MonoBehaviour
 
     void game_Effect()
     {
-        
+
         scoreText.text = "Score: " + score + " Chain: " + chain;
     }
 
@@ -140,15 +137,15 @@ public class TileManager : MonoBehaviour
 
     void ApplyGravityToBoard() //중력 작용
     {
-        for(int x = 0; x < width; x++)
+        for (int x = 0; x < width; x++)
         {
-            for(int y = (height-1); y >= 0; y--)
+            for (int y = (height - 1); y >= 0; y--)
             {
                 Point p = new Point(x, y);
                 Node node = getNodeAtPoint(p);
                 int val = GetValueAtPoint(p);
                 if (val != 0) continue; //If it is not a hole, do nothing
-                for(int ny = (y-1); ny >= -1; ny--)
+                for (int ny = (y - 1); ny >= -1; ny--)
                 {
                     Point next = new Point(x, ny);
                     int nextval = GetValueAtPoint(next);
@@ -243,7 +240,8 @@ public class TileManager : MonoBehaviour
         {
             for (int x = 0; x < width; x++)
             {
-                board[x, y] = new Node((boardLayout.rows[y].row[x]) ? -1 : fillPiece(), new Point(x, y), 1);
+                if (boardLayout.rows[y].row[x] == 0) board[x, y] = new Node(fillPiece(), new Point(x, y), 1);
+                else board[x, y] = new Node(boardLayout.rows[y].row[x], new Point(x, y), 1);
             }
         }
     }
@@ -260,7 +258,7 @@ public class TileManager : MonoBehaviour
                 if (val <= 0) continue;
 
                 remove = new List<int>();
-                while(isConnected(p, true).Count > 0)
+                while (isConnected(p, true).Count > 0)
                 {
                     val = GetValueAtPoint(p);
                     if (!remove.Contains(val))
@@ -275,7 +273,7 @@ public class TileManager : MonoBehaviour
     {
         for (int x = 0; x < width; x++)
         {
-            for(int y = 0; y < height; y++)
+            for (int y = 0; y < height; y++)
             {
                 Node node = getNodeAtPoint(new Point(x, y));
 
@@ -383,7 +381,7 @@ public class TileManager : MonoBehaviour
                 AddPoints(ref connected, line);
         }
 
-        for(int i = 0; i < 4; i++) //Check for a 2x2
+        for (int i = 0; i < 4; i++) //Check for a 2x2
         {
             List<Point> square = new List<Point>(i);
 
@@ -406,7 +404,7 @@ public class TileManager : MonoBehaviour
                 AddPoints(ref connected, square);
         }
 
-        if(main) //Checks for other matches along the current
+        if (main) //Checks for other matches along the current
         {
             for (int i = 0; i < connected.Count; i++)
                 AddPoints(ref connected, isConnected(connected[i], false));
@@ -421,12 +419,12 @@ public class TileManager : MonoBehaviour
 
     void AddPoints(ref List<Point> points, List<Point> add)
     {
-        foreach(Point p in add)
+        foreach (Point p in add)
         {
             bool doadd = true;
-            for(int i = 0; i < points.Count; i++)
+            for (int i = 0; i < points.Count; i++)
             {
-                if(points[i].Equals(p))
+                if (points[i].Equals(p))
                 {
                     doadd = false;
                     break;

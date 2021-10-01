@@ -8,7 +8,7 @@ public class ArrayLayout
 	[System.Serializable]
 	public struct rowData
 	{
-		public bool[] row;
+		public int[] row;
 	}
 
 	public Grid grid;
