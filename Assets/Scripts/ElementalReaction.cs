@@ -29,6 +29,9 @@ public class ElementalReaction : MonoBehaviour
 
         if (el.x == 3 && el.y == 2) FireGrass();
         if (el.x == 4 && el.y == 2) FireLight();
+        if (el.x == 5 && el.y == 2) FireIce();
+        if (el.x == 6 && el.y == 2) FireGround();
+        if (el.x == 7 && el.y == 2) FireWind();
     }
 
     void WaterFire()   //바꾼 블럭을 기준으로 3x3블럭이 터짐
@@ -95,6 +98,23 @@ public class ElementalReaction : MonoBehaviour
         for (int x = -3; x <= 3; x++)
             for (int y = -3; y <= 3; y++)
                 if (Mathf.Abs(x) == Mathf.Abs(y))   game.addDeadPiece(new Point(mp.endP.x + x, mp.endP.y + y));
+    }
+
+    void FireIce()   //바꾼 블럭을 기준으로 x자 모양으로 길이 7만큼 원소를 지움
+    {
+        for (int x = -3; x <= 3; x++)
+            for (int y = -3; y <= 3; y++)
+                if (Mathf.Abs(x) == Mathf.Abs(y)) game.SetValue(new Point(mp.endP.x + x, mp.endP.y + y), 1);
+    }
+
+    void FireGround()
+    {
+
+    }
+
+    void FireWind()
+    {
+
     }
 }
 

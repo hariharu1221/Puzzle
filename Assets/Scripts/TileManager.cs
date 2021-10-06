@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class TileManager : MonoBehaviour
 {
-    public ArrayLayout boardLayout;
+    public ArrayLayout boardLayout = new ArrayLayout();
 
     [Header("UI Elements")]
     public Sprite[] pieces;
@@ -23,13 +23,14 @@ public class TileManager : MonoBehaviour
     public int width = 9;
     public int height = 14;
     int[] fills;
-    Node[,] board;
+    public Node[,] board;
 
     ElementalReaction er;
     MovePieces mp;
 
     List<NodePiece> update;
     List<FlippedPieces> flipped;
+    [HideInInspector]
     public List<NodePiece> dead;
 
     System.Random random;
